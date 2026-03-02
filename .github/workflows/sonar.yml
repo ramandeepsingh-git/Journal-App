@@ -38,4 +38,4 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=ramandeepsingh-git_Journal-App -Dsonar.organization=ramandeepsingh-git -Dsonar.host.url=https://sonarcloud.io
+        run: mvn -B verify sonar:sonar -Dsonar.projectKey=ramandeepsingh-git_Journal-App -Dsonar.organization=ramandeep-git -Dsonar.host.url=https://sonarcloud.io
