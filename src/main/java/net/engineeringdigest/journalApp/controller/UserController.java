@@ -1,10 +1,12 @@
 package net.engineeringdigest.journalApp.controller;
 
+import net.engineeringdigest.journalApp.api.response.WeatherResponse;
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.UserRepository;
 import net.engineeringdigest.journalApp.services.JournalEntryService;
 import net.engineeringdigest.journalApp.services.UserService;
+import net.engineeringdigest.journalApp.services.WeatherService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class  UserController {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private WeatherService weatherService;
+
     @PutMapping
     public ResponseEntity<?> updateUser (@RequestBody User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -32,11 +37,23 @@ public class  UserController {
         userinDB.setPassword(user.getPassword());
         userService.saveNewUser(userinDB);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    };
+    }
+
     @DeleteMapping
     public ResponseEntity<?> deleteUserById(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         userRepository.deleteByUsername(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greetings(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        WeatherResponse weatherResponse = weatherService.getWhether("Mumbai");
+        String greetings = "";
+        if (weatherResponse!= null){
+            greetings = " Weather : " + weatherResponse.getCurrent().getTemperature();
+        }
+        return new ResponseEntity<>("Hi " + authentication.getName() + greetings, HttpStatus.OK);
     }
 }
