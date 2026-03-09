@@ -1,8 +1,6 @@
 package net.engineeringdigest.journalApp.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import net.engineeringdigest.journalApp.controller.JournalEntryController;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -16,6 +14,8 @@ import java.util.List;
 @Builder
 @Document(collection = "users")
 @Data //Getters and setters using lombok
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     private ObjectId id;
@@ -24,6 +24,9 @@ public class User {
     private String username;
     @NonNull
     private String password;
+
+    private String email;
+    private boolean sentimentAnalysis;
     @DBRef
     private List<JournalEntry> journalentries = new ArrayList<>();
     private List<String> roles;

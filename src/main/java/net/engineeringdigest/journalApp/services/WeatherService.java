@@ -1,22 +1,27 @@
 package net.engineeringdigest.journalApp.services;
 
 import net.engineeringdigest.journalApp.api.response.WeatherResponse;
+import net.engineeringdigest.journalApp.cache.AppCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@Service
 public class WeatherService {
-    private static final String apiKey = "630f386820a59d895fc9f961db162b92";
-    private static final String API = "https://api.weatherstack.com/current?access_key=KEY&query=CITY";
+    @Value("${weather.api.key}")
+    private String apiKey;
 
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private AppCache appCache;
     public WeatherResponse getWhether(String city){
-        String finalAPI = API.replace("CITY",city).replace("KEY",apiKey);
+        String finalAPI = appCache.appCache.get("WEATHER_API").replace("<city>",city).replace("<key>",apiKey);
         ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
         WeatherResponse body = response.getBody();
         return body;
