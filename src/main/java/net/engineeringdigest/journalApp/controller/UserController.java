@@ -1,6 +1,9 @@
 package net.engineeringdigest.journalApp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import net.engineeringdigest.journalApp.api.response.WeatherResponse;
+import net.engineeringdigest.journalApp.dto.UserDto;
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.UserRepository;
@@ -20,6 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "User API's", description = "Get, Update and Delete User")
 public class  UserController {
     @Autowired
     private UserService userService;
@@ -29,17 +33,24 @@ public class  UserController {
     private WeatherService weatherService;
 
     @PutMapping
-    public ResponseEntity<?> updateUser (@RequestBody User user){
+    @Operation(summary = "Update Current User")
+    public ResponseEntity<?> updateUser (@RequestBody UserDto user){
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        newUser.setPassword(user.getPassword());
+        newUser.setEmail(user.getEmail());
+        newUser.setSentimentAnalysis(user.isSentimentAnalysis());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User userinDB = userService.findByUsername(username);
-        userinDB.setUsername(user.getUsername());
-        userinDB.setPassword(user.getPassword());
+        userinDB.setUsername(newUser.getUsername());
+        userinDB.setPassword(newUser.getPassword());
         userService.saveNewUser(userinDB);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete User")
     public ResponseEntity<?> deleteUserById(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         userRepository.deleteByUsername(authentication.getName());
@@ -47,12 +58,18 @@ public class  UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Greet User (Weather Api)")
     public ResponseEntity<?> greetings(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        WeatherResponse weatherResponse = weatherService.getWhether("Mumbai");
+        WeatherResponse weatherResponse = weatherService.getWeather("Munich");
         String greetings = "";
         if (weatherResponse!= null){
-            greetings = " Weather : " + weatherResponse.getCurrent().getTemperature();
+            greetings = "\nWeather : " + weatherResponse.getCurrent().getTemperature()
+                    + "\nHumidity: " + weatherResponse.getCurrent().getHumidity()
+                    + "\nWind Speed: " + weatherResponse.getCurrent().getWindSpeed()
+                    + "\nFeels Like: " + weatherResponse.getCurrent().getFeelslike()
+                    + "\nVisibility: " + weatherResponse.getCurrent().getVisibility()
+                    + "\nDescription: " + weatherResponse.getCurrent().getWeatherDescriptions();
         }
         return new ResponseEntity<>("Hi " + authentication.getName() + greetings, HttpStatus.OK);
     }

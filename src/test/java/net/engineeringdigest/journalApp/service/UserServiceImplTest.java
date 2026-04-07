@@ -2,7 +2,7 @@ package net.engineeringdigest.journalApp.service;
 
 import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.UserRepository;
-import net.engineeringdigest.journalApp.services.UserDetailServiceimpl;
+import net.engineeringdigest.journalApp.services.UserDetailServiceImpl;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class UserServiceImplTest {
     @InjectMocks
-    public UserDetailServiceimpl userDetailsService;
+    public UserDetailServiceImpl userDetailsService;
 
     @Mock
     public UserRepository userRepository;
